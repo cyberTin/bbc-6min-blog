@@ -444,40 +444,124 @@ a {
   background: rgba(255,255,255,0.1);
 }
 
-/* Transcript */
-.transcript-section {
-  padding: 40px 0;
+/* ─── Karaoke Lyrics Section ─────────────────────────────────────────── */
+.lyrics-section {
+  padding: 16px 0 40px;
 }
 
-.transcript-header {
+.lyrics-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.transcript-box {
-  background: var(--bg-darker);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 30px;
-  max-height: 500px;
+.lyrics-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.lyrics-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.lyrics-box {
+  max-width: 900px;
+  margin: 0 auto;
+  height: 380px;
   overflow-y: auto;
-  font-size: 16px;
-  line-height: 1.8;
-  color: #D1D1D6;
-  white-space: pre-wrap;
+  overflow-x: hidden;
+  /* Hide scrollbar visually */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 60px 0;
+  position: relative;
+}
+.lyrics-box::-webkit-scrollbar { display: none; }
+
+/* Gradient fade top/bottom for cinematic look */
+.lyrics-box::before,
+.lyrics-box::after {
+  content: '';
+  position: sticky;
+  left: 0; right: 0;
+  height: 80px;
+  display: block;
+  pointer-events: none;
+  z-index: 2;
+}
+.lyrics-box::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--bg-dark) 0%, transparent 100%);
+  margin-bottom: -80px;
+}
+.lyrics-box::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+  margin-top: -80px;
 }
 
-.transcript-box p {
-  margin-bottom: 1.5rem;
-}
-
-.transcript-placeholder {
+/* Each subtitle line */
+.lyric-line {
+  display: block;
   text-align: center;
-  opacity: 0.5;
-  font-style: italic;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 10px 40px;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+.lyric-line:hover {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.lyric-line.past {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.lyric-line.active {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  transform: scale(1.03);
+  /* Gradient highlight on active line */
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+/* Status / loading states */
+.lyric-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  color: var(--text-dim);
+  font-size: 15px;
+  text-align: center;
+}
+
+.lyric-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: rotate 1s infinite linear;
+}
+
 
 /* Episodes Grid */
 .episodes-section {

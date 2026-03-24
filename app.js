@@ -1,272 +1,293 @@
 /**
- * 6 Minute English - App Logic
+ * BBC 6 Minute English – Karaoke subtitle player
  */
 
-let episodes = [];
-let currentEpisodeIndex = -1;
-let playMode = 'sequential'; // 'sequential', 'loop', 'random'
-let isPlaying = false;
+// ─── State ────────────────────────────────────────────────────────────────────
+let episodes       = [];
+let currentIdx     = -1;
+let playMode       = 'sequential';   // sequential | loop | random
+let isPlaying      = false;
+let subtitleCues   = [];             // [{start, end, text}]
+let activeCueIdx   = -1;
 
-// Elements
-const audioEl = document.getElementById('audioEl');
-const btnPlay = document.getElementById('btnPlay');
-const progressBar = document.getElementById('progressBar');
+// ─── DOM refs ─────────────────────────────────────────────────────────────────
+const audioEl      = document.getElementById('audioEl');
+const btnPlay      = document.getElementById('btnPlay');
+const progressBar  = document.getElementById('progressBar');
 const progressFill = document.getElementById('progressFill');
-const progressThumb = document.getElementById('progressThumb');
-const timeCurrent = document.getElementById('timeCurrent');
-const timeTotal = document.getElementById('timeTotal');
+const progressThumb= document.getElementById('progressThumb');
+const timeCurrent  = document.getElementById('timeCurrent');
+const timeTotal    = document.getElementById('timeTotal');
 const episodesGrid = document.getElementById('episodesGrid');
-const playerTitle = document.getElementById('playerTitle');
-const playerDesc = document.getElementById('playerDesc');
-const playerImage = document.getElementById('playerImage');
-const playerNum = document.getElementById('playerNum');
-const playerDate = document.getElementById('playerDate');
-const linkBBC = document.getElementById('linkBBC');
-const linkPDF = document.getElementById('linkPDF');
-const transcriptBox = document.getElementById('transcriptBox');
-const transcriptText = document.getElementById('transcriptText');
+const playerTitle  = document.getElementById('playerTitle');
+const playerDesc   = document.getElementById('playerDesc');
+const playerImage  = document.getElementById('playerImage');
+const playerNum    = document.getElementById('playerNum');
+const playerDate   = document.getElementById('playerDate');
+const linkBBC      = document.getElementById('linkBBC');
+const linkPDF      = document.getElementById('linkPDF');
+const lyricsBox    = document.getElementById('lyricsBox');
 const episodeCount = document.getElementById('episodeCount');
 
-// Initialize
+// ─── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
     try {
-        const response = await fetch('episodes.json');
-        episodes = await response.json();
-        
-        // Sort by id or number (usually reverse chronological)
-        // RSS already gives latest first, so we keep that order as index 0, 1, 2...
-        
+        const res = await fetch('episodes.json');
+        episodes = await res.json();
         episodeCount.textContent = episodes.length;
         renderEpisodes(episodes);
-        
-        // Deep linking
-        const urlParams = new URLSearchParams(window.location.search);
-        const epId = urlParams.get('ep');
-        if (epId) {
-            const found = episodes.findIndex(e => e.id === epId);
-            if (found !== -1) selectEpisode(found);
+
+        // deep link ?ep=XXXXXX
+        const ep = new URLSearchParams(location.search).get('ep');
+        if (ep) {
+            const idx = episodes.findIndex(e => e.id === ep);
+            if (idx !== -1) selectEpisode(idx);
         }
 
-        // Setup audio events
-        setupAudioEvents();
-        
-    } catch (err) {
-        console.error('Failed to load episodes:', err);
-        episodesGrid.innerHTML = `<div class="error-state">Failed to load episodes. Please try again later.</div>`;
+        setupAudio();
+    } catch (e) {
+        episodesGrid.innerHTML = '<p style="color:#f66;padding:40px">Failed to load episodes.</p>';
     }
 }
 
-// Global filter function
-window.filterEpisodes = (query) => {
-    const q = query.toLowerCase();
-    const filtered = episodes.filter(ep => 
-        ep.title.toLowerCase().includes(q) || 
-        ep.description.toLowerCase().includes(q)
-    );
-    renderEpisodes(filtered);
+// ─── Episode list ─────────────────────────────────────────────────────────────
+window.filterEpisodes = q => {
+    q = q.toLowerCase();
+    renderEpisodes(episodes.filter(e =>
+        e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q)
+    ));
 };
 
 function renderEpisodes(items) {
-    if (items.length === 0) {
-        episodesGrid.innerHTML = `<div class="empty-state">No episodes found matching your search.</div>`;
+    if (!items.length) {
+        episodesGrid.innerHTML = '<p style="padding:40px;color:var(--text-dim)">No episodes found.</p>';
         return;
     }
-
-    episodesGrid.innerHTML = items.map((ep, idx) => {
-        // Find actual index in global episodes array
-        const globalIdx = episodes.indexOf(ep);
-        const isActive = globalIdx === currentEpisodeIndex;
-        
+    episodesGrid.innerHTML = items.map(ep => {
+        const gi = episodes.indexOf(ep);
         return `
-            <div class="episode-card ${isActive ? 'active' : ''}" onclick="selectEpisode(${globalIdx})">
-                <img class="card-img" src="${ep.image || 'https://via.placeholder.com/400x225/222/555?text=BBC+6+Minute+English'}" alt="${ep.title}" loading="lazy">
-                <div class="card-active-indicator">▶</div>
-                <div class="card-content">
-                    <div class="card-meta">
-                        <span>${ep.date || ''}</span>
-                        <span>EP. ${ep.num || (episodes.length - globalIdx)}</span>
-                    </div>
-                    <h3 class="card-title">${ep.title}</h3>
-                    <p class="card-desc">${ep.description}</p>
-                </div>
+        <div class="episode-card ${gi===currentIdx?'active':''}" onclick="selectEpisode(${gi})">
+          <img class="card-img" src="${ep.image||''}" alt="${ep.title}" loading="lazy">
+          <div class="card-active-indicator">▶</div>
+          <div class="card-content">
+            <div class="card-meta">
+              <span>${ep.date||''}</span><span>EP ${ep.num||''}</span>
             </div>
-        `;
+            <h3 class="card-title">${ep.title}</h3>
+            <p class="card-desc">${ep.description}</p>
+          </div>
+        </div>`;
     }).join('');
 }
 
-window.selectEpisode = (index) => {
-    if (index < 0 || index >= episodes.length) return;
-    
-    const ep = episodes[index];
-    currentEpisodeIndex = index;
-    
-    // Update player UI
-    playerTitle.textContent = ep.title;
-    playerDesc.textContent = ep.description;
-    playerImage.src = ep.image;
-    playerNum.textContent = `Ep. ${ep.num || (episodes.length - index)}`;
-    playerDate.textContent = ep.date || '';
-    
-    linkBBC.href = ep.link;
-    linkPDF.href = ep.pdf || '#';
-    linkPDF.style.display = ep.pdf ? 'flex' : 'none';
-    
-    // Transcript
-    if (ep.transcript) {
-        transcriptText.textContent = ep.transcript;
-        transcriptText.classList.remove('transcript-placeholder');
-    } else {
-        transcriptText.textContent = "Transcript for this episode is being prepared. Check the BBC link for details.";
-        transcriptText.classList.add('transcript-placeholder');
-    }
+// ─── Select & play ────────────────────────────────────────────────────────────
+window.selectEpisode = idx => {
+    if (idx < 0 || idx >= episodes.length) return;
+    const ep = episodes[idx];
+    currentIdx = idx;
 
-    // Audio
+    playerTitle.textContent = ep.title;
+    playerDesc.textContent  = ep.description;
+    playerImage.src         = ep.image || '';
+    playerNum.textContent   = `Ep. ${ep.num || (episodes.length - idx)}`;
+    playerDate.textContent  = ep.date || '';
+    linkBBC.href            = ep.link;
+    linkPDF.href            = ep.pdf || '#';
+
+    // Reset lyrics
+    subtitleCues = [];
+    activeCueIdx = -1;
+    showLyricsLoading();
+
+    // Load audio
     audioEl.src = ep.mp3;
     audioEl.load();
-    
-    // Start playing
-    audioEl.play().catch(e => console.log("Auto-play blocked", e));
+
+    // Try loading pre-generated VTT from /vtt/<id>.vtt
+    loadVTT(ep.id);
+
+    audioEl.play().catch(() => {});
     isPlaying = true;
     updatePlayBtn();
-    
-    // Highlight in list
-    updateListHighlight();
-    
-    // Scroll player into view on mobile
-    if (window.innerWidth < 768) {
-        document.getElementById('player-section').scrollIntoView({behavior: 'smooth'});
-    }
+
+    // Mark list
+    document.querySelectorAll('.episode-card').forEach(card => card.classList.remove('active'));
+    // re-render to reflect active state
+    renderEpisodes(episodes.filter(e => {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        return !q || e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q);
+    }));
+
+    if (window.innerWidth < 768)
+        document.getElementById('player-section').scrollIntoView({behavior:'smooth'});
 };
 
-window.togglePlay = () => {
-    if (currentEpisodeIndex === -1) {
-        selectEpisode(0);
-        return;
+// ─── VTT loader ───────────────────────────────────────────────────────────────
+async function loadVTT(epId) {
+    try {
+        const res = await fetch(`vtt/${epId}.vtt`);
+        if (!res.ok) throw new Error('not found');
+        const text = await res.text();
+        subtitleCues = parseVTT(text);
+        activeCueIdx = -1;
+        if (subtitleCues.length) {
+            renderLyrics();
+        } else {
+            showLyricsMessage('Subtitles unavailable for this episode.');
+        }
+    } catch {
+        showLyricsMessage('Subtitles are being generated. Check back soon! 🎙️');
     }
-    
-    if (audioEl.paused) {
-        audioEl.play();
-        isPlaying = true;
-    } else {
-        audioEl.pause();
-        isPlaying = false;
-    }
-    updatePlayBtn();
-};
-
-function updatePlayBtn() {
-    btnPlay.textContent = isPlaying ? '⏸' : '▶';
-    btnPlay.classList.toggle('playing', isPlaying);
 }
+
+function parseVTT(text) {
+    const cues = [];
+    const blocks = text.split(/\n\n+/);
+    for (const block of blocks) {
+        const lines = block.trim().split('\n');
+        const timeLine = lines.find(l => l.includes('-->'));
+        if (!timeLine) continue;
+        const [startStr, endStr] = timeLine.split('-->').map(s => s.trim());
+        const textContent = lines.slice(lines.indexOf(timeLine) + 1).join(' ').trim();
+        if (!textContent) continue;
+        cues.push({
+            start: vttTimeToSec(startStr),
+            end:   vttTimeToSec(endStr),
+            text:  textContent
+        });
+    }
+    return cues;
+}
+
+function vttTimeToSec(t) {
+    // HH:MM:SS.mmm or MM:SS.mmm
+    const parts = t.split(':').map(Number);
+    if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+    return parts[0]*60 + parts[1];
+}
+
+// ─── Lyrics / subtitle rendering ──────────────────────────────────────────────
+function renderLyrics() {
+    lyricsBox.innerHTML = subtitleCues.map((cue, i) =>
+        `<div class="lyric-line" id="cue-${i}" data-idx="${i}">${cue.text}</div>`
+    ).join('');
+    activeCueIdx = -1;
+}
+
+function showLyricsLoading() {
+    lyricsBox.innerHTML = `
+      <div class="lyric-status">
+        <div class="lyric-spinner"></div>
+        <p>Loading subtitles…</p>
+      </div>`;
+}
+
+function showLyricsMessage(msg) {
+    lyricsBox.innerHTML = `<p class="lyric-status">${msg}</p>`;
+}
+
+function syncLyrics(currentTime) {
+    if (!subtitleCues.length) return;
+
+    // Find current cue
+    let found = -1;
+    for (let i = 0; i < subtitleCues.length; i++) {
+        if (currentTime >= subtitleCues[i].start && currentTime < subtitleCues[i].end) {
+            found = i;
+            break;
+        }
+    }
+
+    if (found === activeCueIdx) return; // no change
+    activeCueIdx = found;
+
+    // Highlight
+    document.querySelectorAll('.lyric-line').forEach((el, i) => {
+        if (i < found) {
+            el.className = 'lyric-line past';
+        } else if (i === found) {
+            el.className = 'lyric-line active';
+        } else {
+            el.className = 'lyric-line';
+        }
+    });
+
+    // Scroll active line to center
+    if (found >= 0) {
+        const el = document.getElementById(`cue-${found}`);
+        if (el) {
+            const boxRect  = lyricsBox.getBoundingClientRect();
+            const elRect   = el.getBoundingClientRect();
+            const offset   = elRect.top - boxRect.top - (boxRect.height / 2) + (elRect.height / 2);
+            lyricsBox.scrollBy({ top: offset, behavior: 'smooth' });
+        }
+    }
+}
+
+// ─── Audio events ─────────────────────────────────────────────────────────────
+function setupAudio() {
+    audioEl.addEventListener('timeupdate', () => {
+        const t  = audioEl.currentTime || 0;
+        const d  = audioEl.duration || 0;
+        const pct = d ? (t / d) * 100 : 0;
+        progressFill.style.width  = `${pct}%`;
+        progressThumb.style.left  = `${pct}%`;
+        timeCurrent.textContent   = fmt(t);
+        syncLyrics(t);
+    });
+
+    audioEl.addEventListener('loadedmetadata', () => {
+        timeTotal.textContent = fmt(audioEl.duration);
+    });
+
+    audioEl.addEventListener('ended', () => playNext());
+
+    audioEl.addEventListener('pause', () => { isPlaying = false; updatePlayBtn(); });
+    audioEl.addEventListener('play',  () => { isPlaying = true;  updatePlayBtn(); });
+
+    // Click progress bar
+    progressBar.addEventListener('click', seekTo);
+    progressBar.addEventListener('mousedown', e => {
+        seekTo(e);
+        const move = e => seekTo(e);
+        const up   = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+    });
+}
+
+function seekTo(e) {
+    const rect = progressBar.getBoundingClientRect();
+    const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audioEl.currentTime = pct * (audioEl.duration || 0);
+}
+
+// ─── Controls ─────────────────────────────────────────────────────────────────
+window.togglePlay = () => {
+    if (currentIdx === -1) { selectEpisode(0); return; }
+    audioEl.paused ? audioEl.play() : audioEl.pause();
+};
 
 window.playNext = () => {
-    if (playMode === 'random') {
-        const next = Math.floor(Math.random() * episodes.length);
-        selectEpisode(next);
-    } else if (playMode === 'loop') {
-        selectEpisode(currentEpisodeIndex);
-    } else {
-        // Sequential
-        const next = (currentEpisodeIndex + 1) % episodes.length;
-        selectEpisode(next);
-    }
+    if (playMode === 'random') selectEpisode(Math.floor(Math.random() * episodes.length));
+    else if (playMode === 'loop') selectEpisode(currentIdx);
+    else selectEpisode((currentIdx + 1) % episodes.length);
 };
 
-window.playPrev = () => {
-    const prev = (currentEpisodeIndex - 1 + episodes.length) % episodes.length;
-    selectEpisode(prev);
-};
+window.playPrev = () => selectEpisode((currentIdx - 1 + episodes.length) % episodes.length);
 
-window.setMode = (mode) => {
+window.setMode = mode => {
     playMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.id === `mode${mode.charAt(0).toUpperCase() + mode.slice(1, 3)}`);
+    ['Seq','Loop','Random'].forEach(k => {
+        document.getElementById(`mode${k}`).classList.toggle('active', mode === k.toLowerCase());
     });
-    // Fix IDs manually for the buttons
-    document.getElementById('modeSeq').classList.toggle('active', mode === 'sequential');
-    document.getElementById('modeLoop').classList.toggle('active', mode === 'loop');
-    document.getElementById('modeRandom').classList.toggle('active', mode === 'random');
 };
 
-let autoScrollEnabled = true;
-
-function setupAudioEvents() {
-    audioEl.ontimeupdate = () => {
-        const duration = audioEl.duration || 0;
-        const currentTime = audioEl.currentTime || 0;
-        const pct = (currentTime / duration) * 100 || 0;
-        progressFill.style.width = `${pct}%`;
-        progressThumb.style.left = `${pct}%`;
-        timeCurrent.textContent = formatTime(currentTime);
-
-        // Sync scroll transcript
-        if (autoScrollEnabled && transcriptBox.scrollHeight > transcriptBox.clientHeight) {
-            const scrollRange = transcriptBox.scrollHeight - transcriptBox.clientHeight;
-            const targetScroll = (currentTime / duration) * scrollRange;
-            // Smoothly scroll
-            transcriptBox.scrollTo({
-                top: targetScroll,
-                behavior: 'smooth'
-            });
-        }
-    };
-    
-    audioEl.onloadedmetadata = () => {
-        timeTotal.textContent = formatTime(audioEl.duration);
-    };
-    
-    audioEl.onended = () => {
-        playNext();
-    };
-    
-    // ProgressBar interaction
-    progressBar.onmousedown = (e) => {
-        seek(e);
-        window.onmousemove = seek;
-        window.onmouseup = () => { window.onmousemove = null; };
-    };
-    
-    // Click seek
-    progressBar.onclick = seek;
-}
-
-function seek(e) {
-    const rect = progressBar.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    if (x < 0) x = 0;
-    if (x > rect.width) x = rect.width;
-    const pct = x / rect.width;
-    audioEl.currentTime = pct * audioEl.duration;
-}
-
-function formatTime(sec) {
-    if (isNaN(sec)) return '0:00';
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-}
-
-function updateListHighlight() {
-    document.querySelectorAll('.episode-card').forEach((card, idx) => {
-        // This is tricky because filtered list might have different DOM order
-        // Better to re-render or use data attributes
-    });
-    // Simplified: Just re-render the grid (small enough for 100 items)
-    // Actually search filter might be active, so we just use the rendered cards
-}
-
-window.toggleSync = () => {
-    autoScrollEnabled = !autoScrollEnabled;
-    const btn = document.getElementById('btnSync');
-    btn.textContent = `Sync Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
-    btn.classList.toggle('active', autoScrollEnabled);
-};
-
-window.toggleTranscript = () => {
-    const box = document.getElementById('transcriptBox');
-    const btn = document.getElementById('btnToggleTranscript');
+window.toggleLyrics = () => {
+    const box = document.getElementById('lyricsSection');
+    const btn = document.getElementById('btnToggleLyrics');
     if (box.style.display === 'none') {
-        box.style.display = 'block';
+        box.style.display = '';
         btn.textContent = 'Hide';
     } else {
         box.style.display = 'none';
@@ -274,5 +295,15 @@ window.toggleTranscript = () => {
     }
 };
 
-// Start
+function updatePlayBtn() {
+    btnPlay.innerHTML = isPlaying ? '⏸' : '▶';
+}
+
+function fmt(s) {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+}
+
+// ─── Start ────────────────────────────────────────────────────────────────────
 init();
