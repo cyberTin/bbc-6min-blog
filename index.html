@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BBC 6 Minute English – Listen & Learn | 6.tian.bond</title>
+  <meta name="description" content="Stream the latest 100 BBC 6 Minute English episodes with transcripts. Learn English with subtitles, choose sequential or single-episode loop." />
+  <link rel="canonical" href="https://6.tian.bond" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🎙</span>
+        <div class="logo-text">
+          <span class="logo-main">6 Minute English</span>
+          <span class="logo-sub">BBC Learning · 6.tian.bond</span>
+        </div>
+      </div>
+      <nav class="header-nav">
+        <button class="btn-ghost" id="btnScrollToPlayer" onclick="document.getElementById('player-section').scrollIntoView({behavior:'smooth'})">▶ Player</button>
+        <button class="btn-ghost" id="btnScrollToList" onclick="document.getElementById('episode-list').scrollIntoView({behavior:'smooth'})">📋 Episodes</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🏆 Latest 100 Episodes</div>
+      <h1 class="hero-title">Learn English<br/><span class="gradient-text">in 6 Minutes</span></h1>
+      <p class="hero-subtitle">BBC's award-winning podcast with full transcripts. Listen, read, and improve your English every day.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num" id="episodeCount">100</span><span class="stat-label">Episodes</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">6</span><span class="stat-label">Minutes Each</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">📖</span><span class="stat-label">Full Transcript</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Player Section -->
+  <section id="player-section" class="player-section">
+    <div class="container">
+      <div class="player-card" id="playerCard">
+        <div class="player-episode-image">
+          <img id="playerImage" src="" alt="Episode cover" />
+          <div class="player-episode-overlay"></div>
+        </div>
+        <div class="player-body">
+          <div class="player-meta">
+            <span class="player-ep-num" id="playerNum">Ep. 1</span>
+            <span class="player-ep-date" id="playerDate"></span>
+          </div>
+          <h2 class="player-title" id="playerTitle">Select an episode to start</h2>
+          <p class="player-desc" id="playerDesc">Choose any episode from the list below or press Play to start from the beginning.</p>
+
+          <!-- Audio element -->
+          <audio id="audioEl" preload="none"></audio>
+
+          <!-- Progress bar -->
+          <div class="progress-wrap">
+            <span class="time-current" id="timeCurrent">0:00</span>
+            <div class="progress-bar" id="progressBar">
+              <div class="progress-fill" id="progressFill"></div>
+              <div class="progress-thumb" id="progressThumb"></div>
+            </div>
+            <span class="time-total" id="timeTotal">0:00</span>
+          </div>
+
+          <!-- Controls -->
+          <div class="player-controls">
+            <button class="ctrl-btn" id="btnPrev" title="Previous episode" onclick="playPrev()">⏮</button>
+            <button class="ctrl-btn ctrl-play" id="btnPlay" onclick="togglePlay()">▶</button>
+            <button class="ctrl-btn" id="btnNext" title="Next episode" onclick="playNext()">⏭</button>
+          </div>
+
+          <!-- Mode selector -->
+          <div class="mode-selector">
+            <button class="mode-btn active" id="modeSeq" onclick="setMode('sequential')">🔁 Sequential</button>
+            <button class="mode-btn" id="modeLoop" onclick="setMode('loop')">🔂 Loop One</button>
+            <button class="mode-btn" id="modeRandom" onclick="setMode('random')">🔀 Random</button>
+          </div>
+
+          <!-- Links -->
+          <div class="player-links" id="playerLinks">
+            <a id="linkBBC" href="#" target="_blank" rel="noopener" class="link-btn link-bbc">🌐 BBC Page</a>
+            <a id="linkPDF" href="#" target="_blank" rel="noopener" class="link-btn link-pdf">📄 Transcript PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transcript / Subtitle Section -->
+  <section class="transcript-section" id="transcriptSection">
+    <div class="container">
+      <div class="transcript-header">
+        <h2>📖 Episode Transcript</h2>
+        <button class="btn-ghost" id="btnToggleTranscript" onclick="toggleTranscript()">Hide</button>
+      </div>
+      <div class="transcript-box" id="transcriptBox">
+        <p id="transcriptText" class="transcript-placeholder">Play an episode to view its transcript.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Episode List -->
+  <section id="episode-list" class="episodes-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">All Episodes</h2>
+        <div class="search-wrap">
+          <input type="search" id="searchInput" placeholder="🔍 Search episodes…" oninput="filterEpisodes(this.value)" />
+        </div>
+      </div>
+      <div class="episodes-grid" id="episodesGrid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading episodes…</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Audio &amp; content © BBC Learning English. This site is for personal educational use only.</p>
+      <p>Built with ❤️ · <a href="https://tian.bond" target="_blank" rel="noopener">tian.bond</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
