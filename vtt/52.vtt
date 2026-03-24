@@ -1,0 +1,349 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.000
+6-8 English
+
+2
+00:00:02.000 --> 00:00:05.000
+From BBCLearningEnglish.com
+
+3
+00:00:08.000 --> 00:00:13.000
+Hello and welcome to 6-minute English from BBCLearningEnglish.
+
+4
+00:00:13.000 --> 00:00:14.000
+I'm Beth.
+
+5
+00:00:14.000 --> 00:00:15.000
+And I'm Neil.
+
+6
+00:00:15.000 --> 00:00:21.000
+Don't forget that you can find a transcript and a quiz for this episode on our website, BBCLearningEnglish.com
+
+7
+00:00:21.000 --> 00:00:25.000
+Now, today, Neil, we're talking all about solving crime.
+
+8
+00:00:25.000 --> 00:00:28.000
+Do you think you'd be a good detective?
+
+9
+00:00:28.000 --> 00:00:30.000
+Actually, no, Beth.
+
+10
+00:00:30.000 --> 00:00:33.000
+I think my brain's not very good with details.
+
+11
+00:00:33.000 --> 00:00:39.000
+Today, we'll be talking about how artificial intelligence might help detectives and the police
+
+12
+00:00:39.000 --> 00:00:41.000
+investigate crimes.
+
+13
+00:00:41.000 --> 00:00:43.000
+But first, I have a question for you, Beth.
+
+14
+00:00:43.000 --> 00:00:48.000
+In the UK, lots of people enjoy watching fictional detectives on TV.
+
+15
+00:00:48.000 --> 00:00:54.000
+These programs are called murder mysteries, and tell the story of a detective solving a crime.
+
+16
+00:00:54.000 --> 00:01:02.000
+In 2020, a magazine called The Radio Times asked readers who their favorite TV detective was.
+
+17
+00:01:02.000 --> 00:01:04.000
+So, who do you think was the most popular?
+
+18
+00:01:04.000 --> 00:01:07.000
+Was it a Sherlock Holmes, B.
+
+19
+00:01:07.000 --> 00:01:10.000
+Aircure Poirot, or C. Miss Marple?
+
+20
+00:01:10.000 --> 00:01:12.000
+Surely at Sherlock Holmes.
+
+21
+00:01:12.000 --> 00:01:18.000
+Well, you sound very sure, but I will reveal the answer at the end of the program.
+
+22
+00:01:18.000 --> 00:01:22.000
+Now, when the police are investigating crimes in the real world,
+
+23
+00:01:22.000 --> 00:01:26.000
+their techniques are often quite different from what we see on television.
+
+24
+00:01:26.000 --> 00:01:35.000
+Yes, solving crimes involves collecting and reviewing lots of evidence, like DNA, fingerprints, or CCTV.
+
+25
+00:01:35.000 --> 00:01:42.000
+All of this work takes a lot of time, so can AI help police speed up the work and even solve crimes?
+
+26
+00:01:42.000 --> 00:01:48.000
+That's the question listener Alister had for the BBC Radio 4 program, The Artificial Human,
+
+27
+00:01:48.000 --> 00:01:52.000
+and host Alex Krotowski wanted to know more.
+
+28
+00:01:52.000 --> 00:01:55.000
+So, Alister, why are you asking this question?
+
+29
+00:01:55.000 --> 00:01:58.000
+Tell us a little bit about yourself and where are you coming from?
+
+30
+00:01:58.000 --> 00:02:01.000
+So, my name is Alister and I'm a serving police officer.
+
+31
+00:02:01.000 --> 00:02:04.000
+My background is with investigation.
+
+32
+00:02:04.000 --> 00:02:09.000
+I'm looking at artificial intelligence and thinking, what can it do for me?
+
+33
+00:02:09.000 --> 00:02:13.000
+Alex asks Alister to explain where he's coming from.
+
+34
+00:02:13.000 --> 00:02:17.000
+This means explain his perspective or point of view.
+
+35
+00:02:17.000 --> 00:02:22.000
+In informal English, we'll often ask someone, do you get where I'm coming from?
+
+36
+00:02:22.000 --> 00:02:26.000
+And we're asking whether they understand our opinion or perspective.
+
+37
+00:02:26.000 --> 00:02:32.000
+Alister explains that he's interested in how artificial intelligence could help solve crimes
+
+38
+00:02:32.000 --> 00:02:36.000
+because he's a police officer with a background in investigations.
+
+39
+00:02:36.000 --> 00:02:41.000
+If you have a background in something, it means most of your previous work or experience
+
+40
+00:02:41.000 --> 00:02:42.000
+which related to something.
+
+41
+00:02:42.000 --> 00:02:47.000
+For example, I work as a producer at BBC Learning English now making programs,
+
+42
+00:02:47.000 --> 00:02:51.000
+but my background is in classroom teaching.
+
+43
+00:02:51.000 --> 00:02:58.000
+Alister talks about using artificial intelligence for training and asks, what can it do for me?
+
+44
+00:02:58.000 --> 00:03:02.000
+This means how can artificial intelligence help or improve something?
+
+45
+00:03:02.000 --> 00:03:09.000
+When a crime happens, police officers have to collect and review a lot of information to find evidence.
+
+46
+00:03:09.000 --> 00:03:14.000
+When you have a lot of information to review, it can be difficult to know what's important
+
+47
+00:03:14.000 --> 00:03:17.000
+and find patterns which might be relevant to the crime.
+
+48
+00:03:17.000 --> 00:03:23.000
+But Professor Ruth Morgan, an expert in crime and forensic science,
+
+49
+00:03:23.000 --> 00:03:26.000
+thinks AI could help speed up police work.
+
+50
+00:03:26.000 --> 00:03:30.000
+As she told BBC Radio for us, the artificial human.
+
+51
+00:03:30.000 --> 00:03:33.000
+I think we're seeing a renaissance in the pattern recognition.
+
+52
+00:03:33.000 --> 00:03:36.000
+From surveillance, so finger marks, footwear marks.
+
+53
+00:03:36.000 --> 00:03:39.000
+There's been lots of challenges with those forms of evidence over the last 10 years,
+
+54
+00:03:39.000 --> 00:03:41.000
+probably go a little bit out of favour.
+
+55
+00:03:41.000 --> 00:03:46.000
+And yet what we're beginning to see now with AI is that you can take a photo of a mark with your phone,
+
+56
+00:03:46.000 --> 00:03:50.000
+compare that mark to the database and get real time in sight.
+
+57
+00:03:50.000 --> 00:03:57.000
+Ruth says there's a renaissance in looking at patterns in evidence such as finger marks or footwear marks.
+
+58
+00:03:57.000 --> 00:04:02.000
+Renaissance means new interest or activity in a particular topic or area.
+
+59
+00:04:03.000 --> 00:04:07.000
+This kind of evidence went a little bit out of favour over recent years
+
+60
+00:04:07.000 --> 00:04:11.000
+because of the excitement around DNA evidence.
+
+61
+00:04:11.000 --> 00:04:15.000
+If something is out of favour, it's less popular or appealing.
+
+62
+00:04:15.000 --> 00:04:22.000
+But AI could mean that patterns in finger marks or footwear marks are useful in solving crimes again.
+
+63
+00:04:22.000 --> 00:04:29.000
+This is because AI can be used to compare a picture of a mark with the database of pictures from other crimes
+
+64
+00:04:29.000 --> 00:04:31.000
+and get real time in sight.
+
+65
+00:04:31.000 --> 00:04:36.000
+The adjective real time means the information is presented at the same time that it's happening.
+
+66
+00:04:36.000 --> 00:04:47.000
+Yes, AI can compare lots of information very quickly, which makes finding patterns in evidence much easier and more reliable.
+
+67
+00:04:47.000 --> 00:04:50.000
+There are some problems with using AI to solve crimes, though.
+
+68
+00:04:50.000 --> 00:04:56.000
+To find these patterns, lots of private information would need to be collected,
+
+69
+00:04:56.000 --> 00:05:04.000
+and police usually have to give clear reasons why they need access to certain information in their investigations.
+
+70
+00:05:04.000 --> 00:05:09.000
+It's unlikely an AI powered robot would ever replace a detective anytime soon.
+
+71
+00:05:09.000 --> 00:05:12.000
+Yes, and that reminds me of your question, Neil.
+
+72
+00:05:12.000 --> 00:05:17.000
+I said that Sherlock Holmes was maybe the most popular detective was I right?
+
+73
+00:05:17.000 --> 00:05:19.000
+You were absolutely right.
+
+74
+00:05:20.000 --> 00:05:25.000
+And I think people should try the quiz on our website to find out how much they know as well.
+
+75
+00:05:25.000 --> 00:05:27.000
+It's at BBCLearningEnglish.com.
+
+76
+00:05:27.000 --> 00:05:33.000
+Okay, let's recap the vocabulary we've learned, starting with the expression where you're coming from,
+
+77
+00:05:33.000 --> 00:05:36.000
+which means you're a opinion or perspective on something.
+
+78
+00:05:36.000 --> 00:05:40.000
+Your background is the area that you have the most work experience in.
+
+79
+00:05:40.000 --> 00:05:43.000
+The question, what can this do for me?
+
+80
+00:05:43.000 --> 00:05:46.000
+Is how can this help or improve things?
+
+81
+00:05:46.000 --> 00:05:49.000
+Renaissance means new interest or activity in something.
+
+82
+00:05:49.000 --> 00:05:53.000
+If something is out of favor, it has become less popular or appealing.
+
+83
+00:05:53.000 --> 00:05:58.000
+And the adjective real time means information is presented as it is happening.
+
+84
+00:05:58.000 --> 00:06:06.000
+Once again, our six minutes are up, head to our website to find more episodes of six-minute English at BBCLearningEnglish.com.
+
+85
+00:06:06.000 --> 00:06:07.000
+Bye for now.
+
+86
+00:06:07.000 --> 00:06:08.000
+Bye!
+
+87
+00:06:08.000 --> 00:06:13.000
+6-minute English from BBCLearningEnglish.com.
