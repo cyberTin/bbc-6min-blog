@@ -461,11 +461,12 @@ a {
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 30px;
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
   font-size: 16px;
   line-height: 1.8;
   color: #D1D1D6;
+  white-space: pre-wrap;
 }
 
 .transcript-box p {

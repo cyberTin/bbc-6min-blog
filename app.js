@@ -188,12 +188,27 @@ window.setMode = (mode) => {
     document.getElementById('modeRandom').classList.toggle('active', mode === 'random');
 };
 
+let autoScrollEnabled = true;
+
 function setupAudioEvents() {
     audioEl.ontimeupdate = () => {
-        const pct = (audioEl.currentTime / audioEl.duration) * 100 || 0;
+        const duration = audioEl.duration || 0;
+        const currentTime = audioEl.currentTime || 0;
+        const pct = (currentTime / duration) * 100 || 0;
         progressFill.style.width = `${pct}%`;
         progressThumb.style.left = `${pct}%`;
-        timeCurrent.textContent = formatTime(audioEl.currentTime);
+        timeCurrent.textContent = formatTime(currentTime);
+
+        // Sync scroll transcript
+        if (autoScrollEnabled && transcriptBox.scrollHeight > transcriptBox.clientHeight) {
+            const scrollRange = transcriptBox.scrollHeight - transcriptBox.clientHeight;
+            const targetScroll = (currentTime / duration) * scrollRange;
+            // Smoothly scroll
+            transcriptBox.scrollTo({
+                top: targetScroll,
+                behavior: 'smooth'
+            });
+        }
     };
     
     audioEl.onloadedmetadata = () => {
@@ -239,6 +254,13 @@ function updateListHighlight() {
     // Simplified: Just re-render the grid (small enough for 100 items)
     // Actually search filter might be active, so we just use the rendered cards
 }
+
+window.toggleSync = () => {
+    autoScrollEnabled = !autoScrollEnabled;
+    const btn = document.getElementById('btnSync');
+    btn.textContent = `Sync Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
+    btn.classList.toggle('active', autoScrollEnabled);
+};
 
 window.toggleTranscript = () => {
     const box = document.getElementById('transcriptBox');

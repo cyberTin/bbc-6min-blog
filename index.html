@@ -103,7 +103,10 @@
     <div class="container">
       <div class="transcript-header">
         <h2>📖 Episode Transcript</h2>
-        <button class="btn-ghost" id="btnToggleTranscript" onclick="toggleTranscript()">Hide</button>
+        <div class="transcript-actions">
+          <button class="btn-ghost active" id="btnSync" onclick="toggleSync()">Sync Scroll: ON</button>
+          <button class="btn-ghost" id="btnToggleTranscript" onclick="toggleTranscript()">Hide</button>
+        </div>
       </div>
       <div class="transcript-box" id="transcriptBox">
         <p id="transcriptText" class="transcript-placeholder">Play an episode to view its transcript.</p>
