@@ -1,3 +1,4 @@
+/* BBC 6 Minute English Subtitle Styles - Updated 2026-03-25 */
 :root {
   --primary: #FF3B3F;
   --secondary: #6A11CB;
@@ -538,6 +539,12 @@ a {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
+  animation: lyricPulse 0.3s ease-out;
+}
+
+@keyframes lyricPulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.03); opacity: 1; }
 }
 
 /* Status / loading states */
@@ -622,6 +629,15 @@ a {
   transform: translateY(-8px);
   background: rgba(255,255,255,0.08);
   border-color: rgba(255,255,255,0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.episode-card {
+  animation: fadeIn 0.5s ease backwards;
 }
 
 .card-img {

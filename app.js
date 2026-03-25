@@ -45,6 +45,11 @@ async function init() {
         }
 
         setupAudio();
+        
+        // Auto-select first episode if not specified
+        if (!ep && episodes.length) {
+            updateEpisodeUI(0);
+        }
     } catch (e) {
         episodesGrid.innerHTML = '<p style="color:#f66;padding:40px">Failed to load episodes.</p>';
     }
@@ -82,10 +87,22 @@ function renderEpisodes(items) {
 
 // ─── Select & play ────────────────────────────────────────────────────────────
 window.selectEpisode = idx => {
+    updateEpisodeUI(idx);
+    audioEl.play().catch(() => {
+        console.log("Auto-play blocked, user must click play.");
+    });
+    isPlaying = true;
+    updatePlayBtn();
+    
+    if (window.innerWidth < 768)
+        document.getElementById('player-section').scrollIntoView({behavior:'smooth'});
+};
+
+function updateEpisodeUI(idx) {
     if (idx < 0 || idx >= episodes.length) return;
     const ep = episodes[idx];
     currentIdx = idx;
-
+    
     playerTitle.textContent = ep.title;
     playerDesc.textContent  = ep.description;
     playerImage.src         = ep.image || '';
@@ -93,34 +110,24 @@ window.selectEpisode = idx => {
     playerDate.textContent  = ep.date || '';
     linkBBC.href            = ep.link;
     linkPDF.href            = ep.pdf || '#';
-
+    
     // Reset lyrics
     subtitleCues = [];
     activeCueIdx = -1;
     showLyricsLoading();
-
-    // Load audio
+    
+    // Load audio without auto-playing (just prepare it)
     audioEl.src = ep.mp3;
     audioEl.load();
-
-    // Try loading pre-generated VTT from /vtt/<id>.vtt
     loadVTT(ep.id);
-
-    audioEl.play().catch(() => {});
-    isPlaying = true;
-    updatePlayBtn();
-
-    // Mark list
+    
+    // Highlighting cards
     document.querySelectorAll('.episode-card').forEach(card => card.classList.remove('active'));
-    // re-render to reflect active state
     renderEpisodes(episodes.filter(e => {
         const q = document.getElementById('searchInput').value.toLowerCase();
         return !q || e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q);
     }));
-
-    if (window.innerWidth < 768)
-        document.getElementById('player-section').scrollIntoView({behavior:'smooth'});
-};
+}
 
 // ─── VTT loader ───────────────────────────────────────────────────────────────
 async function loadVTT(epId) {
@@ -142,14 +149,26 @@ async function loadVTT(epId) {
 
 function parseVTT(text) {
     const cues = [];
-    const blocks = text.split(/\n\n+/);
+    const normalized = text.replace(/\r\n/g, '\n').trim();
+    const blocks = normalized.split(/\n\n+/);
+    
     for (const block of blocks) {
-        const lines = block.trim().split('\n');
+        const lines = block.split('\n').map(l => l.trim()).filter(l => l !== '');
+        if (lines.length < 2) continue;
+        
         const timeLine = lines.find(l => l.includes('-->'));
         if (!timeLine) continue;
+        
         const [startStr, endStr] = timeLine.split('-->').map(s => s.trim());
-        const textContent = lines.slice(lines.indexOf(timeLine) + 1).join(' ').trim();
+        const timeIdx = lines.indexOf(timeLine);
+        
+        // Everything after timeLine is the subtitle text
+        let textContent = lines.slice(timeIdx + 1).join(' ');
+        // Strip common VTT tags like <c.xxx> or <i>
+        textContent = textContent.replace(/<[^>]+>/g, '').trim();
+        
         if (!textContent) continue;
+        
         cues.push({
             start: vttTimeToSec(startStr),
             end:   vttTimeToSec(endStr),
@@ -216,10 +235,14 @@ function syncLyrics(currentTime) {
     if (found >= 0) {
         const el = document.getElementById(`cue-${found}`);
         if (el) {
-            const boxRect  = lyricsBox.getBoundingClientRect();
-            const elRect   = el.getBoundingClientRect();
-            const offset   = elRect.top - boxRect.top - (boxRect.height / 2) + (elRect.height / 2);
-            lyricsBox.scrollBy({ top: offset, behavior: 'smooth' });
+            const elCenter = el.offsetTop + (el.offsetHeight / 2);
+            const boxCenter = lyricsBox.offsetHeight / 2;
+            const targetScroll = elCenter - boxCenter;
+            
+            lyricsBox.scrollTo({
+                top: targetScroll,
+                behavior: 'smooth'
+            });
         }
     }
 }
@@ -277,9 +300,12 @@ window.playNext = () => {
 window.playPrev = () => selectEpisode((currentIdx - 1 + episodes.length) % episodes.length);
 
 window.setMode = mode => {
+    // Standardize 'sequential' to 'seq'
+    if (mode === 'sequential') mode = 'seq';
     playMode = mode;
     ['Seq','Loop','Random'].forEach(k => {
-        document.getElementById(`mode${k}`).classList.toggle('active', mode === k.toLowerCase());
+        const btn = document.getElementById(`mode${k}`);
+        if (btn) btn.classList.toggle('active', mode === k.toLowerCase());
     });
 };
 
